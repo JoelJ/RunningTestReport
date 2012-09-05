@@ -1,0 +1,52 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <l:layout norefresh="true" title="Running Test Failure Report">
+        <st:include it="${it.findBuild()}" page="sidepanel.jelly" />
+        <l:main-panel>
+            <style>
+                .hidden{
+                    display:none;
+                }
+                textarea{
+                    width:90%;
+                    height:500px;
+                }
+            </style>
+            <j:set var="testOutput" value="${it.generateFailureReport()}"/>
+            <table border="1" class="sortable pane bigtable" style="width:800px;">
+                <tr>
+                    <th class="sortheader">Test</th>
+                    <th class="sortheader">Age</th>
+                </tr>
+                <j:forEach var="key" items="${testOutput.keySet()}">
+                    <tr >
+                        <td>
+                            <h4>${key}</h4>
+                            <a id="${key}-showlink" href="javascript:showStackTrace('${key}')">&gt;&gt;&gt;</a>
+                            <a id="${key}-hidelink" href="javascript:hideStackTrace('${key}')" class="hidden">&lt;&lt;&lt;</a>
+                            <div id="${key}-output" class="hidden">
+                                <textarea disabled="true">${testOutput.get(key)}</textarea>
+                            </div>
+                        </td>
+                        <td>
+                            ${it.findAge(key)}
+                        </td>
+                    </tr>
+                </j:forEach>
+            </table>
+            <script type="text/javascript">
+                function hideStackTrace(id){
+                    document.getElementById(id+'-output').className="hidden";
+                    document.getElementById(id+'-showlink').className="";
+                    document.getElementById(id+'-hidelink').className="hidden";
+                }
+
+                function showStackTrace(id){
+                    document.getElementById(id+'-output').className="";
+                    document.getElementById(id+'-showlink').className="hidden";
+                    document.getElementById(id+'-hidelink').className="";
+                }
+            </script>
+        </l:main-panel>
+    </l:layout>
+
+</j:jelly>
