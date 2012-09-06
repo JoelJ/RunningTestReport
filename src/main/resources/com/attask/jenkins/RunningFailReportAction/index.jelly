@@ -3,47 +3,48 @@
         <st:include it="${it.findBuild()}" page="sidepanel.jelly" />
         <l:main-panel>
             <style>
-                .hidden{
+                #RunningFailures .hidden {
                     display:none;
                 }
-                textarea{
+                #RunningFailures textarea{
                     width:90%;
-                    height:500px;
+                    max-height:500px;
                 }
+				#RunningFailures th.age {
+					width: 10px;
+				}
+
+				#RunningFailures td.age {
+					text-align: center;
+				}
             </style>
             <j:set var="testOutput" value="${it.generateFailureReport()}"/>
-            <table border="1" class="sortable pane bigtable" style="width:800px;">
+            <table border="1" class="sortable pane bigtable" style="width:800px;" id="RunningFailures">
                 <tr>
                     <th class="sortheader">Test</th>
-                    <th class="sortheader">Age</th>
+                    <th class="sortheader age">Age</th>
                 </tr>
                 <j:forEach var="key" items="${testOutput.keySet()}">
                     <tr >
                         <td>
-                            <h4>${key}</h4>
-                            <a id="${key}-showlink" href="javascript:showStackTrace('${key}')">&gt;&gt;&gt;</a>
-                            <a id="${key}-hidelink" href="javascript:hideStackTrace('${key}')" class="hidden">&lt;&lt;&lt;</a>
+                            <div>${key}</div>
+                            <a id="${key}-showlink" href="javascript:toggleStackTrace('${key}')">&gt;&gt;&gt;</a>
+                            <a id="${key}-hidelink" href="javascript:toggleStackTrace('${key}')" class="hidden">&lt;&lt;&lt;</a>
                             <div id="${key}-output" class="hidden">
                                 <textarea disabled="true">${testOutput.get(key)}</textarea>
                             </div>
                         </td>
-                        <td>
+                        <td class="age">
                             ${it.findAge(key)}
                         </td>
                     </tr>
                 </j:forEach>
             </table>
             <script type="text/javascript">
-                function hideStackTrace(id){
-                    document.getElementById(id+'-output').className="hidden";
-                    document.getElementById(id+'-showlink').className="";
-                    document.getElementById(id+'-hidelink').className="hidden";
-                }
-
-                function showStackTrace(id){
-                    document.getElementById(id+'-output').className="";
-                    document.getElementById(id+'-showlink').className="hidden";
-                    document.getElementById(id+'-hidelink').className="";
+                function toggleStackTrace(id){
+					${'$'}(id+'-output').toggleClassName('hidden');
+					${'$'}(id+'-showlink').toggleClassName('hidden');
+					${'$'}(id+'-hidelink').toggleClassName('hidden');
                 }
             </script>
         </l:main-panel>
