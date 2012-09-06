@@ -4,11 +4,12 @@ import hudson.model.*;
 import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestResultAction;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,8 +29,8 @@ public class RunningFailReportAction implements Action {
     private final String endPattern;
     private final int endGroupNumber;
 
-//	private transient int lastLine = -1;
-//	private transient Reference<Map<String, String>> cachedMap;
+	private transient int lastLine = -1;
+	private transient Reference<Map<String, String>> cachedMap;
 
     public RunningFailReportAction(String buildId, String startPattern, String startGroupNumber, String endPattern, String endGroupNumber){
         this.buildId=buildId;
@@ -50,22 +51,23 @@ public class RunningFailReportAction implements Action {
 
 		int count = 0;
 		Map<String, String> testOutput = null;
-//		if (cachedMap != null) {
-//			testOutput = cachedMap.get();
-//		}
-//		if(testOutput == null) {
-//			lastLine = -1;
+		if (cachedMap != null) {
+			testOutput = cachedMap.get();
+		}
+		if(testOutput == null) {
+			lastLine = -1;
 			testOutput = new ConcurrentHashMap<String, String>();
-//			cachedMap = new SoftReference<Map<String, String>>(testOutput);
-//		}
+			cachedMap = new SoftReference<Map<String, String>>(testOutput);
+		}
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(run.getLogFile()),run.getCharset()));
 		try {
 			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
 				count++;
-//				if(lastLine >= 0 && count <= lastLine) {
-//					continue;
-//				}
+				if(lastLine >= 0 && count <= lastLine) {
+                    System.out.println("skipping: "+line);
+					continue;
+				}
 
 				Matcher startMatcher = startPattern.matcher(line);
 				if(testName == null && startMatcher.find()) {
@@ -91,7 +93,7 @@ public class RunningFailReportAction implements Action {
 				}
 			}
 		} finally {
-//			lastLine = count;
+			lastLine = count;
 			reader.close();
 		}
 

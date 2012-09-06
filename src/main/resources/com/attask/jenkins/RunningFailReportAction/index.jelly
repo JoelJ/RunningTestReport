@@ -9,6 +9,11 @@
                 #RunningFailures textarea{
                     width:90%;
                     max-height:500px;
+                    min-height:400px;
+                    max-width:800px;
+                    font-size:10px;
+                    color:red;
+                    font-family: ‘Lucida Console’, Monaco, monospace;
                 }
 				#RunningFailures th.age {
 					width: 10px;
@@ -19,34 +24,43 @@
 				}
             </style>
             <j:set var="testOutput" value="${it.generateFailureReport()}"/>
-            <table border="1" class="sortable pane bigtable" style="width:800px;" id="RunningFailures">
-                <tr>
-                    <th class="sortheader">Test</th>
-                    <th class="sortheader age">Age</th>
-                </tr>
-                <j:forEach var="key" items="${testOutput.keySet()}">
-                    <tr >
-                        <td>
-                            <div>${key}</div>
-                            <a id="${key}-showlink" href="javascript:toggleStackTrace('${key}')">&gt;&gt;&gt;</a>
-                            <a id="${key}-hidelink" href="javascript:toggleStackTrace('${key}')" class="hidden">&lt;&lt;&lt;</a>
-                            <div id="${key}-output" class="hidden">
-                                <textarea disabled="true">${testOutput.get(key)}</textarea>
-                            </div>
-                        </td>
-                        <td class="age">
-                            ${it.findAge(key)}
-                        </td>
+            <j:if test="${testOutput.size()>0}">
+                <table border="1" class="sortable pane bigtable" style="width:800px;" id="RunningFailures">
+                    <tr>
+                        <th class="sortheader">Test</th>
+                        <th class="sortheader age">Age</th>
                     </tr>
-                </j:forEach>
-            </table>
-            <script type="text/javascript">
-                function toggleStackTrace(id){
-					${'$'}(id+'-output').toggleClassName('hidden');
-					${'$'}(id+'-showlink').toggleClassName('hidden');
-					${'$'}(id+'-hidelink').toggleClassName('hidden');
-                }
-            </script>
+                    <j:forEach var="key" items="${testOutput.keySet()}">
+                        <tr >
+                            <td>
+                                <div>
+                                    <a id="${key}-showlink" href="javascript:toggleStackTrace('${key}')">&gt;&gt;&gt;</a>
+                                    <a id="${key}-hidelink" href="javascript:toggleStackTrace('${key}')" class="hidden">&lt;&lt;&lt;</a>
+                                    ${key}
+                                </div>
+                                <div id="${key}-output" class="hidden">
+                                    <div><h3>Error Details</h3></div>
+                                    <textarea id="StackTrace" disabled="true">${testOutput.get(key)}</textarea>
+                                </div>
+                            </td>
+                            <td class="age">
+                                ${it.findAge(key)}
+                            </td>
+                        </tr>
+                    </j:forEach>
+                </table>
+                <script type="text/javascript">
+                    function toggleStackTrace(id){
+                        ${'$'}(id+'-output').toggleClassName('hidden');
+                        ${'$'}(id+'-showlink').toggleClassName('hidden');
+                        ${'$'}(id+'-hidelink').toggleClassName('hidden');
+                    }
+                </script>
+            </j:if>
+            <!--else -->
+            <j:if test="${testOutput.size()==0}">
+                <h1>You've got no failed builds...Yet.</h1>
+            </j:if>
         </l:main-panel>
     </l:layout>
 
