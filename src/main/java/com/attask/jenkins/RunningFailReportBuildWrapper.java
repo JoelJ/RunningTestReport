@@ -20,60 +20,60 @@ import java.io.IOException;
  */
 public class RunningFailReportBuildWrapper extends BuildWrapper {
 
-    private String startPattern;
-    private String startGroupNumber;
-    private String endPattern;
-    private String endGroupNumber;
+	private String startPattern;
+	private String startGroupNumber;
+	private String endPattern;
+	private String endGroupNumber;
 
-    @DataBoundConstructor
-    public RunningFailReportBuildWrapper(String startPattern, String startGroupNumber, String endPattern, String endGroupNumber) {
-        this.startPattern = startPattern;
-        this.startGroupNumber = startGroupNumber;
-        this.endPattern = endPattern;
-        this.endGroupNumber = endGroupNumber;
-    }
+	@DataBoundConstructor
+	public RunningFailReportBuildWrapper(String startPattern, String startGroupNumber, String endPattern, String endGroupNumber) {
+		this.startPattern = startPattern;
+		this.startGroupNumber = startGroupNumber;
+		this.endPattern = endPattern;
+		this.endGroupNumber = endGroupNumber;
+	}
 
-    @Override
-    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
-        String externalizableId = build.getExternalizableId();
+	@Override
+	public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+		String externalizableId = build.getExternalizableId();
 
-        RunningFailReportAction action = new RunningFailReportAction(externalizableId, startPattern, startGroupNumber, endPattern, endGroupNumber);
-        build.addAction(action);
-        return new Environment() {
-            @Override
-            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-                build.getAction(RunningFailReportAction.class).tearDown();
-                return true;
-            }
-        };
-    }
+		RunningFailReportAction action = new RunningFailReportAction(externalizableId, startPattern, startGroupNumber, endPattern, endGroupNumber);
+		build.addAction(action);
+		return new Environment() {
+			@Override
+			public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+				build.getAction(RunningFailReportAction.class).tearDown();
+				return true;
+			}
+		};
+	}
 
-    public String getStartPattern() {
-        return startPattern;
-    }
+	public String getStartPattern() {
+		return startPattern;
+	}
 
-    public String getStartGroupNumber() {
-        return startGroupNumber;
-    }
+	public String getStartGroupNumber() {
+		return startGroupNumber;
+	}
 
-    public String getEndPattern() {
-        return endPattern;
-    }
+	public String getEndPattern() {
+		return endPattern;
+	}
 
-    public String getEndGroupNumber() {
-        return endGroupNumber;
-    }
+	public String getEndGroupNumber() {
+		return endGroupNumber;
+	}
 
-    @Extension
-    public static class DescriptorImpl extends BuildWrapperDescriptor {
-        @Override
-        public boolean isApplicable(AbstractProject<?, ?> item) {
-            return true;
-        }
+	@Extension
+	public static class DescriptorImpl extends BuildWrapperDescriptor {
+		@Override
+		public boolean isApplicable(AbstractProject<?, ?> item) {
+			return true;
+		}
 
-        @Override
-        public String getDisplayName() {
-            return "Running Failures Reporting";
-        }
-    }
+		@Override
+		public String getDisplayName() {
+			return "Running Failures Reporting";
+		}
+	}
 }
