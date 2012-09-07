@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.text.DateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,6 +105,7 @@ public class RunningFailReportAction implements Action {
 		int age = DEFAULT_AGE;
 		AbstractBuild build = (AbstractBuild) AbstractBuild.fromExternalizableId(buildId);
 		AbstractProject project = build.getProject();
+
 		Run lastStableBuild = project.getLastStableBuild();
 		Run lastUnstableBuild = project.getLastUnstableBuild();
 		if (lastUnstableBuild != null && (lastStableBuild == null || lastStableBuild.getNumber() < lastUnstableBuild.getNumber())) {
@@ -119,6 +121,10 @@ public class RunningFailReportAction implements Action {
 			}
 		}
 		return age;
+	}
+
+	public String parseTime(AbstractBuild build){
+		return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(build.getTime());
 	}
 
 	public void tearDown() {
